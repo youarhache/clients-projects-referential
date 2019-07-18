@@ -1,0 +1,13 @@
+[
+  "tests/domain/test_company.py::test_company_model_init",
+  "tests/domain/test_company.py::test_company_model_from_dict",
+  "tests/domain/test_company.py::test_company_model_to_dict",
+  "tests/domain/test_company.py::test_company_model_equal",
+  "tests/domain/test_contact.py::test_contact_model_init",
+  "tests/domain/test_contact.py::test_contact_model_form_dict",
+  "tests/domain/test_contact.py::test_contact_model_to_dict",
+  "tests/domain/test_contact.py::test_contact_model_equal",
+  "tests/rest/test_contact_endpoints.py::test_get_contacts",
+  "tests/serializers/test_contact_json_serializer.py::test_serialize_domain_contact",
+  "tests/usecases/test_contact_usecases.py::test_use_case_contact_list_all"
+]
