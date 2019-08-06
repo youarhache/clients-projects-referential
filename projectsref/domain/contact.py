@@ -1,5 +1,6 @@
 class Contact:
-    """Contact information being it internal or working at the client company"""
+    """Contact information. 
+       the contact can be internal or working at the client company"""
     
     
     def __init__(self, code : str, 

@@ -1,3 +1,4 @@
 flask
+pymongo
 connexion
 Flask-RESTPlus

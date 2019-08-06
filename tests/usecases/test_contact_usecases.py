@@ -3,6 +3,8 @@ import uuid
 from unittest import mock
 from projectsref.domain import contact as c
 from projectsref.usecases import contact_usecases as uc
+from projectsref.request_response_objects import request_objects as req, response_objects as resp
+
 
 @pytest.fixture
 def domain_contacts():
@@ -45,12 +47,51 @@ def domain_contacts():
     return [cntct1, cntct2, cntct3, cntct4, cntct5]
     
 
-def test_use_case_contact_list_all(domain_contacts):
+def test_use_case_contact_list_without_filters(domain_contacts):
     repo = mock.Mock()
-    repo.list_all_contacts.return_value = domain_contacts
-    my_uc = uc.ContactListAllUseCase(repo)
-    result = my_uc.execute()
-    repo.list_all_contacts.assert_called_with()
-    assert result == domain_contacts
+    repo.list_contacts.return_value = domain_contacts
+    my_uc = uc.ContactListUseCase(repo)
+
+    request = req.ContactsListRequestObj()
+    response = my_uc.execute(request)
+
+    assert bool(response) is True
+    repo.list_contacts.assert_called_with(filters=None)
+    assert response.value == domain_contacts
 
 
+def test_use_case_contact_list_with_filters(domain_contacts):
+    repo = mock.Mock()
+    repo.list_contacts.return_value = domain_contacts
+    my_uc = uc.ContactListUseCase(repo)
+
+    qry_filters = {"code__eq": 1}
+    request = req.ContactsListRequestObj.from_dict({"filters": qry_filters})
+    response = my_uc.execute(request)
+
+    assert bool(response) is True
+    repo.list_contacts.assert_called_with(filters=qry_filters)
+    assert response.value == domain_contacts
+
+
+def test_use_case_contact_list_bad_request():
+    repo = mock.Mock()
+    my_uc = uc.ContactListUseCase(repo)
+    request = req.ContactsListRequestObj.from_dict({"filters": 0})
+    response = my_uc.execute(request)
+
+    assert bool(response) is False
+    assert response.value == {"type": resp.ResponseFailure.PARAMETERS_ERROR,
+                             "message": "filters: Is not a dictionnary"}
+
+def test_use_case_contact_list_generic_exception():
+    repo = mock.Mock()
+    repo.list_contacts.side_effect = Exception("Ceci est un message d'erreur")
+    my_uc = uc.ContactListUseCase(repo)
+
+    request = req.ContactsListRequestObj.from_dict({})
+    response = my_uc.execute(request)
+
+    assert bool(response) is False
+    assert response.value == {"type": resp.ResponseFailure.SYSTEM_ERROR,
+                            "message": "Exception: Ceci est un message d'erreur"}
